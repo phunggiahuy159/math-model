@@ -21,13 +21,19 @@ COLORS = {
 _ORDER = ["S", "x", "y", "z"]
 
 
-def time_series(traj, title: str) -> go.Figure:
-    """Static time-series of all four state variables."""
+def time_series(traj, title: str, keys=None) -> go.Figure:
+    """Static time-series of the selected state variables.
+
+    ``keys`` is an iterable of state keys ("S", "x", "y", "z") to draw; when
+    ``None`` all four lines are shown.
+    """
+    keys = list(keys) if keys is not None else list(STATE_KEYS)
+    label_of = dict(zip(STATE_KEYS, STATE_LABELS))
     fig = go.Figure()
-    for key, label in zip(STATE_KEYS, STATE_LABELS):
+    for key in keys:
         fig.add_trace(go.Scatter(
             x=traj.t, y=getattr(traj, key), mode="lines",
-            name=label, line=dict(color=COLORS[key], width=2),
+            name=label_of[key], line=dict(color=COLORS[key], width=2),
         ))
     fig.update_layout(
         title=title, xaxis_title="time t",
@@ -38,33 +44,36 @@ def time_series(traj, title: str) -> go.Figure:
     return fig
 
 
-def time_series_animated(traj, title: str, n_frames: int = 60) -> go.Figure:
+def time_series_animated(traj, title: str, n_frames: int = 60,
+                         keys=None) -> go.Figure:
     """Animated time-series: a growing trace with a Play button.
 
     The animation reveals the transient settling onto its attractor; for a
     limit cycle the curve keeps sweeping the same band, for an equilibrium it
-    flattens out.
+    flattens out. ``keys`` selects which state variables to draw (all if None).
     """
+    keys = list(keys) if keys is not None else list(STATE_KEYS)
+    label_of = dict(zip(STATE_KEYS, STATE_LABELS))
     t = traj.t
     n = len(t)
     idx = np.linspace(2, n, n_frames).astype(int)
 
     base = []
-    for key, label in zip(STATE_KEYS, STATE_LABELS):
+    for key in keys:
         base.append(go.Scatter(
             x=t[: idx[0]], y=getattr(traj, key)[: idx[0]], mode="lines",
-            name=label, line=dict(color=COLORS[key], width=2)))
+            name=label_of[key], line=dict(color=COLORS[key], width=2)))
     fig = go.Figure(data=base)
 
     frames = []
     for k in idx:
         frames.append(go.Frame(data=[
             go.Scatter(x=t[:k], y=getattr(traj, key)[:k])
-            for key in STATE_KEYS
+            for key in keys
         ]))
     fig.frames = frames
 
-    ymax = max(getattr(traj, k).max() for k in STATE_KEYS) * 1.05
+    ymax = max(getattr(traj, k).max() for k in keys) * 1.05
     fig.update_layout(
         title=title, xaxis_title="time t", yaxis_title="scaled concentration",
         xaxis=dict(range=[t.min(), t.max()]), yaxis=dict(range=[0, ymax]),

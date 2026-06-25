@@ -15,7 +15,7 @@ import streamlit as st
 
 from foodchain import Parameters, coexistence
 from demo import compute, insights, viz
-from demo.compute import PARAM_FIELDS, STATE_LABELS
+from demo.compute import PARAM_FIELDS, STATE_KEYS, STATE_LABELS
 
 st.set_page_config(page_title="Food-chain chemostat demo",
                    layout="wide", initial_sidebar_state="expanded")
@@ -160,13 +160,26 @@ with tab_dyn:
     traj = _trajectory(values, tuple(y0), float(t_end), n_points)
     summary = compute.attractor_summary(traj)
 
+    # Choose which species lines to display: all of them, or a single one.
+    _SERIES_OPTIONS = {
+        "All species": list(STATE_KEYS),
+        "S (nutrient)": ["S"],
+        "x (prey)": ["x"],
+        "y (predator 1)": ["y"],
+        "z (predator 2)": ["z"],
+    }
+    series_choice = c1.selectbox("Show", list(_SERIES_OPTIONS),
+                                 help="Plot every species or focus on one line.")
+    show_keys = _SERIES_OPTIONS[series_choice]
+
     with c1:
         title = "Time series"
         if animate:
-            st.plotly_chart(viz.time_series_animated(traj, title),
+            st.plotly_chart(viz.time_series_animated(traj, title,
+                                                     keys=show_keys),
                             width='stretch')
         else:
-            st.plotly_chart(viz.time_series(traj, title),
+            st.plotly_chart(viz.time_series(traj, title, keys=show_keys),
                             width='stretch')
 
     with c2:
