@@ -5,3 +5,7 @@ __pycache__/
 venv/
 figures/*.png
 .DS_Store
+
+# Report / presentation sources (kept out of the code repo)
+chemostat_food_chain_report_latex.zip
+report_extract/
