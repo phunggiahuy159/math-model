@@ -1,0 +1,10 @@
+# Streamlit config for the food-chain chemostat demo.
+# Disables the first-run email prompt and telemetry so the launcher scripts
+# start the app non-interactively.
+
+[browser]
+gatherUsageStats = false
+
+[server]
+headless = true
+port = 8501

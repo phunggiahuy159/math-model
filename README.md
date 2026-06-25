@@ -96,6 +96,35 @@ python main.py stability-map
 python main.py all
 ```
 
+## Interactive demo (Streamlit)
+
+An interactive browser app, [`app.py`](app.py), lets you drag the parameters and
+watch the model respond live:
+
+```bash
+pip install -r requirements.txt   # includes streamlit + plotly
+streamlit run app.py
+```
+
+It opens at `http://localhost:8501` with four tabs:
+
+- **▶ Dynamics** — time series (with an animation toggle) and a rotatable 3-D
+  phase portrait; an automatic verdict of *settling to a steady state* vs
+  *sustained oscillation* (with the estimated period).
+- **⚖ Equilibria & stability** — a live table of E0/E1/E2/E\*, their existence
+  and local stability, plus the eigenvalues of `J(E*)` in the complex plane
+  (an eigenvalue entering the red right-half plane is what destabilizes E\*).
+- **🔀 Bifurcation** — sweep any parameter: the leading eigenvalue of E\* with
+  the Hopf point marked, and an on-demand numerical bifurcation diagram showing
+  the limit-cycle amplitude.
+- **📄 Paper check** — automated comparisons of the simulation against the
+  paper's theorems (E0/E1/E2 stability conditions, E\* existence ladder,
+  Routh–Hurwitz vs eigenvalues) with a pass/fail verdict, and a narrative of the
+  Hopf bifurcation / paradox of enrichment.
+
+The demo logic lives in [`demo/`](demo/) (`compute.py`, `viz.py`,
+`insights.py`) and is covered by `tests/test_demo.py`.
+
 Figures are written to `figures/`.
 
 ## What you should see
@@ -104,11 +133,12 @@ With the default parameters:
 
 * **`s_in = 1.0`** -> trajectories converge to a **stable coexistence
   equilibrium** `E*`.
-* Increasing `s_in` past **~2.56** a complex-conjugate eigenvalue pair of
-  `J(E*)` crosses the imaginary axis: a **Hopf bifurcation**. `E*` becomes
-  unstable and a **stable limit cycle** appears (an enrichment-driven
-  destabilization, the "paradox of enrichment").
-* **`s_in = 4.0`** -> sustained oscillations of all four state variables.
+* Increasing `s_in` past **~2.27** a complex-conjugate eigenvalue pair of
+  `J(E*)` crosses the imaginary axis: a **Hopf bifurcation** (angular frequency
+  ~0.67, period ~9.4). `E*` becomes unstable and a **stable limit cycle**
+  appears -- an enrichment-driven destabilization, the "paradox of enrichment".
+* **`s_in = 4.0`** -> sustained oscillations of all four state variables,
+  with amplitude growing as `s_in` increases further.
 
 `python main.py bifurcation` prints the detected Hopf value, angular frequency
 and period, and `tests/` asserts that Routh-Hurwitz agrees with the eigenvalue
@@ -129,7 +159,16 @@ and eigenvalues at `E*`, and the existence of the Hopf bifurcation.
 
 The paper states the response functions and the qualitative results but the
 numeric parameter set for its figures is not present in machine-readable form in
-the source PDF. The defaults in `foodchain/model.py` were chosen to satisfy all
-the existence conditions (so all four equilibria are present) and to place a
-Hopf bifurcation in an easily explored range of `s_in`. Change them freely --
-the analysis code is fully general.
+the source PDF. The defaults in `foodchain/model.py`
+(`m1=2`, `m2=3`, `m3=2`, `a1=1`, `a2=4`, `a3=4`, `D1=D2=D3=0.3`) were chosen so
+that:
+
+* all four equilibria `E0, E1, E2, E*` exist at `s_in = 1`, with `E*` locally
+  asymptotically stable;
+* the interior equilibrium `E*` is **unique** over the explored range of `s_in`
+  (with Holling type-II responses other parameter sets can produce *several*
+  interior equilibria -- `foodchain.all_coexistence` returns every one, and
+  `coexistence` returns the branch continued from `E2`);
+* a Hopf bifurcation sits at an easily explored `s_in ~ 2.27`.
+
+Change them freely -- the analysis code is fully general.

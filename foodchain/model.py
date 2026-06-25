@@ -57,15 +57,15 @@ class Parameters:
         can serve as a bifurcation parameter.
     """
 
-    m1: float = 5.0
-    m2: float = 4.0
-    m3: float = 3.0
-    a1: float = 0.30
-    a2: float = 0.50
-    a3: float = 0.50
-    D1: float = 0.90
-    D2: float = 0.80
-    D3: float = 0.50
+    m1: float = 2.0
+    m2: float = 3.0
+    m3: float = 2.0
+    a1: float = 1.0
+    a2: float = 4.0
+    a3: float = 4.0
+    D1: float = 0.3
+    D2: float = 0.3
+    D3: float = 0.3
     s_in: float = 1.0
 
     # ------------------------------------------------------------------
