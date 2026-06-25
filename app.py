@@ -78,7 +78,7 @@ st.sidebar.title("Parameters")
 st.sidebar.caption("Scaled model (1.2): dS,dx,dy,dz with Michaelis–Menten "
                    "responses fᵢ(u)=mᵢu/(aᵢ+u).")
 
-if st.sidebar.button("↺ Reset to paper defaults"):
+if st.sidebar.button("Reset to paper defaults"):
     for f in PARAM_FIELDS:
         st.session_state[f] = getattr(_DEFAULTS, f)
 
@@ -123,7 +123,7 @@ t_end = st.sidebar.slider("integration time t_end", 100.0, 4000.0, 800.0, 100.0)
 # ----------------------------------------------------------------------
 # Header
 # ----------------------------------------------------------------------
-st.title("🧫 A simple food chain in a chemostat with removal rates")
+st.title("A simple food chain in a chemostat with removal rates")
 st.caption("Interactive companion to El-Sheikh & Mahrouf, *Chaos, Solitons & "
            "Fractals* 23 (2005) 1475–1489. Nutrient S → prey x → predator y → "
            "predator z, each with its own removal rate Dᵢ.")
@@ -146,8 +146,8 @@ else:
             f"attractor.")
 
 tab_dyn, tab_eq, tab_bif, tab_paper = st.tabs(
-    ["▶ Dynamics", "⚖ Equilibria & stability", "🔀 Bifurcation",
-     "📄 Paper check"])
+    ["Dynamics", "Equilibria & stability", "Bifurcation",
+     "Paper check"])
 
 
 # ----------------------------------------------------------------------
@@ -203,7 +203,7 @@ with tab_eq:
                 "equilibrium": r.name,
                 "S": f"{r.state[0]:.4f}", "x": f"{r.state[1]:.4f}",
                 "y": f"{r.state[2]:.4f}", "z": f"{r.state[3]:.4f}",
-                "stable?": "✅ stable" if r.stable else "❌ unstable",
+                "stable?": "stable" if r.stable else "unstable",
                 "max Re(λ)": f"{r.max_real_part:+.4f}",
                 "oscillatory modes": "yes" if r.has_complex_pair else "no",
             })
@@ -283,12 +283,11 @@ with tab_paper:
     st.subheader("Does the simulation match the paper?")
     checks = insights.paper_checks(p)
     ok, headline = insights.overall_verdict(checks)
-    (st.success if ok else st.error)(
-        f"{'✅' if ok else '⚠️'} {headline}")
+    (st.success if ok else st.error)(headline)
 
     for c in checks:
-        icon = "✅" if c.passed else "❌"
-        with st.expander(f"{icon} {c.title}  ·  ({c.reference})",
+        status = "PASS" if c.passed else "FAIL"
+        with st.expander(f"[{status}] {c.title}  ·  ({c.reference})",
                          expanded=not c.passed):
             st.write(c.detail)
 

@@ -73,11 +73,11 @@ def time_series_animated(traj, title: str, n_frames: int = 60) -> go.Figure:
         updatemenus=[dict(
             type="buttons", showactive=False, x=0.0, y=-0.18, xanchor="left",
             buttons=[
-                dict(label="▶ Play", method="animate",
+                dict(label="Play", method="animate",
                      args=[None, dict(frame=dict(duration=40, redraw=True),
                                       fromcurrent=True,
                                       transition=dict(duration=0))]),
-                dict(label="⏸ Pause", method="animate",
+                dict(label="Pause", method="animate",
                      args=[[None], dict(frame=dict(duration=0, redraw=False),
                                         mode="immediate")]),
             ])],
